@@ -4,4 +4,9 @@ from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
+    """defines amenities
+
+    Args:
+        BaseModel (class): parent class
+    """
     name = ""
