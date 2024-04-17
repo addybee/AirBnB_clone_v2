@@ -2,6 +2,7 @@
 """ Console Module """
 import cmd
 import sys
+from re import search
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -27,7 +28,8 @@ class HBNBCommand(cmd.Cmd):
     types = {
              'number_rooms': int, 'number_bathrooms': int,
              'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
+             'latitude': float, 'longitude': float,
+             'name': int
             }
 
     def preloop(self):
@@ -115,14 +117,43 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+        c_name = params = ""
+        args = args.partition(" ")
+        c_name = args[0]
+
+        if not c_name:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+
+        elif c_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
+
+        new_instance = HBNBCommand.classes[c_name]()
+
+        params = args[2]
+        if params:
+            params = params.split(" ")
+            for p in params:
+                p = p.partition("=")
+                att_name = p[0]
+                att_val = p[2]
+                if not att_name:
+                    continue
+                elif att_val and search(r"^\d+\.\d+$", att_val):
+                    att_val = float(att_val)
+                elif att_val and search(r"^\d+$", att_val):
+                    att_val = int(att_val)
+                elif att_val and search(r'^".*"$', att_val):
+                    att_val = att_val.strip("\"")
+                    if "_" in att_val:
+                        att_val = att_val.replace("_", " ")
+                    if '\\"' in att_val:
+                        att_val = att_val.replace('\\"', '"')
+                else:
+                    continue
+                new_instance.__dict__.update({att_name: att_val})
+        new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
