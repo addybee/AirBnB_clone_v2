@@ -3,6 +3,7 @@
 import unittest
 from models.base_model import BaseModel
 from models import storage
+from models.state import State
 import os
 
 
@@ -107,3 +108,31 @@ class test_fileStorage(unittest.TestCase):
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    def test_delete(self):
+        """ """
+        new = BaseModel()
+        obj_len = len(storage.all().keys())
+        storage.delete(new)
+        new_obj_len = len(storage.all().keys())
+        self.assertTrue(obj_len > new_obj_len)
+
+    def test_delete_empty_param(self):
+        """ """
+        new = BaseModel()
+        obj_len = len(storage.all().keys())
+        storage.delete()
+        new_obj_len = len(storage.all().keys())
+        self.assertFalse(obj_len > new_obj_len)
+
+    def test_all_parameter(self):
+        """ """
+        new = BaseModel()
+        new1 = State()
+        temp = storage.all(BaseModel)
+        self.assertIsInstance(temp, dict)
+        for obj in temp.values():
+            self.assertEqual(obj.to_dict()['__class__'], "BaseModel")
+
+        for obj in storage.all(State).values():
+            self.assertEqual(obj.to_dict()['__class__'], "State")
