@@ -8,13 +8,24 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        return FileStorage.__objects
+        dictionary = {}
+        if cls:
+            new = cls()
+            cls = new.to_dict()['__class__']
+            self.delete(new)
+            for key, val in FileStorage.__objects.items():
+                if key.split(".")[0] == cls:
+                    dictionary.update({key: val})
+            return dictionary
+        dictionary.update(FileStorage.__objects)
+        return dictionary
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        FileStorage.__objects.update(
+                    {obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
         """Saves storage dictionary to file"""
@@ -36,19 +47,29 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+            }
+
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                    self.all()[key] = classes[val['__class__']](**val)
+                    FileStorage.__objects[key] = classes[
+                        val['__class__']](**val)
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
+        """ delete obj from __objects if it’s inside if obj not in __objects,
+            the method this method does nothing
+
+        Args:
+            obj (_type_, optional): obj to be deleted.
+        """
         if obj:
-            pass
+            key = obj.to_dict()['__class__'] + '.' + obj.id
+            if key in FileStorage.__objects:
+                del FileStorage.__objects[key]
