@@ -6,18 +6,18 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import String, Column, Integer, DateTime
 
 
-Base = declarative_base() 
+Base = declarative_base()
 
 
 class BaseModel:
     """A base class for all hbnb models"""
-    
+
     id = Column(String(60), primary_key=True)
     created_at = Column(DateTime, nullable=False,
-                                default=datetime.utcnow)
+                        default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False,
-                                default=datetime.utcnow)
-    
+                        default=datetime.utcnow)
+
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
         if not kwargs:
@@ -25,11 +25,22 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            del kwargs['__class__']
+            keys = kwargs.keys()
+
+            if "created_at" in keys:
+                kwargs['created_at'] = datetime.\
+                    strptime(kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
+            else:
+                self.created_at = datetime.now()
+            if "updated_at" in keys:
+                kwargs['updated_at'] = datetime.\
+                    strptime(kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
+            else:
+                self.updated_at = datetime.now()
+            if "__class__" in keys:
+                del kwargs['__class__']
+            if "id" not in keys:
+                setattr(self, "id", str(uuid.uuid4()))
             self.__dict__.update(kwargs)
 
     def __str__(self):

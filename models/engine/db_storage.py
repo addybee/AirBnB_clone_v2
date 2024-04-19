@@ -16,9 +16,9 @@ from models.review import Review
 
 
 classes = {
-            'BaseModel': BaseModel, 'User': User, 'Place': Place,
-            'State': State, 'City': City, 'Amenity': Amenity,
-            'Review': Review
+            'BaseModel': BaseModel, 'State': State, 'City': City,
+            'User': User, 'Place': Place,
+            'Review': Review, 'Amenity': Amenity,
             }
 
 
@@ -26,7 +26,7 @@ class DBStorage:
     """ """
     __engine = None
     __session = None
-    
+
     def __init__(self):
         """ """
         mysql_user = os.getenv("HBNB_MYSQL_USER")
@@ -35,11 +35,11 @@ class DBStorage:
         mysql_DB = os.getenv("HBNB_MYSQL_DB")
         mysql_env = os.getenv("HBNB_ENV")
         DBStorage.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                               format(mysql_user,
-                                      mysql_pass,
-                                      mysql_host,
-                                      mysql_DB),
-                               pool_pre_ping=True)
+                                           format(mysql_user,
+                                                  mysql_pass,
+                                                  mysql_host,
+                                                  mysql_DB),
+                                           pool_pre_ping=True)
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine)
         self.__session = Session()
@@ -60,9 +60,11 @@ class DBStorage:
                         {obj.to_dict()['__class__'] + '.' + obj.id: obj})
             else:
                 for cls in classes.values():
-                    for obj in session.query(cls).all():
-                        dict_obj.update(
-                            {obj.to_dict()['__class__'] + '.' + obj.id: obj})
+                    if cls != classes["BaseModel"]:
+                        for obj in session.query(cls).all():
+                            dict_obj.\
+                                update({obj.to_dict()['__class__'] + '.'
+                                        + obj.id: obj})
         except SQLAlchemyError as e:
             pass
         finally:
@@ -79,7 +81,7 @@ class DBStorage:
         session = self.__session()
         session.commit()
 
-    def delete(self, obj=None): 
+    def delete(self, obj=None):
         """ """
         session = self.__session
         if obj:
