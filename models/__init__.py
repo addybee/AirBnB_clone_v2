@@ -1,17 +1,22 @@
 #!/usr/bin/python3
-from models.base_model import BaseModel
+""" Packages """
 
-class Base():
-    pass
 
+from models.engine.file_storage import FileStorage
+from models.engine.db_storage import DBStorage
+from models.base_model import BaseModel, Base
 from models.user import User
-from models.amenity import Amenity
-from models.city import City
 from models.place import Place
 from models.state import State
+from models.city import City
+from models.amenity import Amenity
 from models.review import Review
-from models.engine import file_storage
+from os import getenv
 
 
-storage = file_storage.FileStorage()
-storage.reload()
+if getenv('HBNB_TYPE_STORAGE') == 'db':
+    storage = DBStorage()
+    storage.reload()
+else:
+    storage = FileStorage()
+    storage.reload()
