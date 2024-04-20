@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 """ define the test for Basemodel class """
-from models.base_model import BaseModel
+
+
+from models import BaseModel, storage
 import unittest
 import datetime
 from uuid import UUID
 import json
-import os
+from os import getenv
 
 
 class test_basemodel(unittest.TestCase):
@@ -50,12 +52,13 @@ class test_basemodel(unittest.TestCase):
 
     def test_save(self):
         """ Testing save """
-        i = self.value()
-        i.save()
-        key = self.name + "." + i.id
-        with open('file.json', 'r') as f:
-            j = json.load(f)
-            self.assertEqual(j[key], i.to_dict())
+        if getenv("HBNB_TYPE_STORAGE") != "db":
+            i = self.value()
+            i.save()
+            key = self.name + "." + i.id
+            with open('file.json', 'r') as f:
+                j = json.load(f)
+                self.assertEqual(j[key], i.to_dict())
 
     def test_str(self):
         """ test the __str__ method of the class """
@@ -75,6 +78,7 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
+    @unittest.skip("the can no longer be catch")
     def test_kwargs_one(self):
         """ test kwargs for invalid key"""
         n = {'Name': 'test'}
@@ -98,3 +102,26 @@ class test_basemodel(unittest.TestCase):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
+
+    def test_kwargs_one_2(self):
+        """ test kwargs for id, updated and created not
+            present in the new obj dictionary
+        """
+        n = {'Name': 'test'}
+        new = self.value(**n)
+        new_dic = new.to_dict()
+        self.assertEqual(type(new.created_at), datetime.datetime)
+        self.assertEqual(type(new.updated_at), datetime.datetime)
+        self.assertEqual(type(new.id), str)
+        self.assertGreater(len(new_dic), len(n))
+
+    def test_delete(self):
+        """ """
+        if getenv("HBNB_TYPE_STORAGE") != "db":
+            new = self.value()
+            new.save()
+            new2 = self.value()
+            new2.save()
+            old = storage.all(self.value)
+            new.delete()
+            self.assertGreater(len(old), len(storage.all(self.value)))

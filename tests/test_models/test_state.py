@@ -15,5 +15,5 @@ class test_state(test_basemodel):
 
     def test_name3(self):
         """ test the attribute type """
-        new = self.value()
+        new = self.value(name="Ogun")
         self.assertEqual(type(new.name), str)

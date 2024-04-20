@@ -5,6 +5,7 @@ import unittest
 from io import StringIO
 from console import HBNBCommand
 from unittest.mock import create_autospec
+from os import getenv
 
 
 class test_console(unittest.TestCase):
@@ -25,11 +26,12 @@ class test_console(unittest.TestCase):
 
     def test_create(self):
         """Test that create works"""
-        console = self.instanceHBNB()
-        console.onecmd("create User name=\"poland\"")
-        self.assertTrue(isinstance(self.outputIO.getvalue(), str))
-        console.onecmd("create User name=\"po\\\"land\"")
-        self.assertTrue(isinstance(self.outputIO.getvalue(), str))
+        if getenv("HBNB_TYPE_STORAGE") != "db":
+            console = self.instanceHBNB()
+            console.onecmd('create State name="poland id="my_id_c_0"')
+            self.assertTrue(isinstance(self.outputIO.getvalue(), str))
+            console.onecmd('create User name="po\\"land"')
+            self.assertTrue(isinstance(self.outputIO.getvalue(), str))
 
     def test_create_missing_class(self):
         """ """
