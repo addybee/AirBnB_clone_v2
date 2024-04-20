@@ -129,8 +129,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
 
-        new_instance = HBNBCommand.classes[c_name]()
-
+        inputs = {}
         params = args[2]
         if params:
             params = params.split(" ")
@@ -140,18 +139,16 @@ class HBNBCommand(cmd.Cmd):
                 att_val = p[2]
                 if not att_name:
                     continue
-                elif att_val and search(r"^\d+\.\d+$", att_val):
+                elif att_val and search(r"^([+-?]\d*(?:\.\d+)?)$", att_val):
                     att_val = eval(att_val)
-                    setattr(new_instance, att_name, att_val)
-                elif att_val and search(r"^\d+$", att_val):
-                    att_val = eval(att_val)
-                    setattr(new_instance, att_name, att_val)
+                    inputs[att_name] = att_val
                 elif att_val and att_val[0] == '"' and att_val[-1] == '"':
                     att_val = att_val.replace("_", " ")
                     att_val = eval(att_val)
-                    setattr(new_instance, att_name, att_val)
+                    inputs[att_name] = att_val
                 else:
                     continue
+        new_instance = HBNBCommand.classes[c_name](**inputs)
         new_instance.save()
         print(new_instance.id)
 
@@ -350,5 +347,3 @@ class HBNBCommand(cmd.Cmd):
         print("Usage: update <className> <id> <attName> <attVal>\n")
 
 
-if __name__ == "__main__":
-    HBNBCommand().cmdloop()
