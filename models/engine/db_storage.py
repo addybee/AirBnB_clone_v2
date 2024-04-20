@@ -67,8 +67,7 @@ class DBStorage:
                                         + obj.id: obj})
         except SQLAlchemyError as e:
             pass
-        finally:
-            session.close()
+
         return dict_obj
 
     def new(self, obj):
