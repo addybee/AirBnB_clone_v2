@@ -106,11 +106,10 @@ class test_fileStorage(unittest.TestCase):
         def test_storage_var_created(self):
             """ FileStorage object storage created """
             from models.engine.file_storage import FileStorage
-            print(type(storage))
             self.assertEqual(type(storage), FileStorage)
 
         def test_delete(self):
-            """ """
+            """ deletion from file storage"""
             new = BaseModel()
             storage.new(new)
             obj_len = len(storage.all().keys())
@@ -119,7 +118,7 @@ class test_fileStorage(unittest.TestCase):
             self.assertTrue(obj_len > new_obj_len)
 
         def test_delete_empty_param(self):
-            """ """
+            """ deletion from file storage without param"""
             new = BaseModel()
             obj_len = len(storage.all().keys())
             storage.delete()
@@ -127,7 +126,7 @@ class test_fileStorage(unittest.TestCase):
             self.assertFalse(obj_len > new_obj_len)
 
         def test_all_parameter(self):
-            """ """
+            """ test all method with param """
             new = BaseModel()
             new1 = State()
             temp = storage.all(BaseModel)
