@@ -18,7 +18,7 @@ def generate_archive_name():
     return f"web_static_{now.strftime('%Y%m%d%H%M%S')}.tgz"
 
 
-def do_park():
+def do_pack():
     """
     Creates a .tgz archive from the contents of the web_static directory.
 
