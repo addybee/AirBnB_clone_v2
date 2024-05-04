@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # sets up your web servers for the deployment of web_static
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
 sudo mkdir -p /data/web_static/shared/
 sudo mkdir -p /data/web_static/releases/test/
 echo "<html>
