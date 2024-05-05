@@ -13,7 +13,7 @@ echo "<html>
   </body>
 </html>" | sudo tee /data/web_static/releases/test/index.html
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
-sudo chown -R 'ubuntu':'ubuntu' /data/
+sudo chown -hR 'ubuntu':'ubuntu' /data/
 sys_conf="http {
   sendfile on;
   tcp_nopush on;
