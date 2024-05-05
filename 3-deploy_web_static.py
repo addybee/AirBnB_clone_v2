@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-"""Fab file for distributing an archive to web servers """
+"""Fab file for generating and distributing an archive to web servers """
 
 
 from datetime import datetime
-from fabric.api import local, put, sudo, sudo, env
+from fabric.api import local, put, sudo, sudo, env, settings
 from os import makedirs, path
 
 
@@ -31,10 +31,13 @@ def do_pack():
     """
     file_name = generate_archive_name()
     makedirs("versions", exist_ok=True)
+    print(f"Packing web_static to versions/{file_name}")
     status = local(f"tar -cvzf versions/{file_name} web_static")
 
     if status.failed:
         return None
+    print(f"web_static packed: {file_name} -> \
+{path.getsize('versions/' + file_name)}Bytes")
     return file_name
 
 
@@ -63,7 +66,7 @@ def do_deploy(archive_path):
         return False
     if sudo(f"rm -rf /tmp/{file_name}").failed:
         return False
-    if sudo(f"mv {release_folder}web_static/* {release_folder}").failed:
+    if sudo(f"mv  {release_folder}web_static/* {release_folder}").failed:
         return False
     if sudo(f"rm -rf {release_folder}web_static/").failed:
         return False
@@ -73,3 +76,13 @@ def do_deploy(archive_path):
         return False
     print("New version deployed!")
     return True
+
+
+def deploy():
+    # Local Stage: Run do_pack locally
+    path_name = do_pack()
+    if not path_name:
+        return False
+
+    # Remote Stage: Execute do_deploy on each server
+    return do_deploy(path_name)
