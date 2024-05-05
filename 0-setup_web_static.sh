@@ -14,12 +14,22 @@ echo "<html>
 </html>" | sudo tee /data/web_static/releases/test/index.html
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 sudo chown -R 'ubuntu':'ubuntu' /data/
-sudo sed -i "/http {/a\\
-    server {\\
-        location \/hbnb_static {\\
-            alias \/data\/web_static\/current\/;\\
-        }\\
-    }\n" /etc/nginx/nginx.conf
-sudo sudo sed -i "s/include \/etc\/nginx\/sites-enabled/\
-#include \/etc\/nginx\/sites-enabled/g" /etc/nginx/nginx.conf
+sys_conf="http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  server {
+    location /hbnb_static {
+      alias /data/web_static/current/;
+    }
+  }
+}"
+echo "$sys_conf" | sudo tee /etc/nginx/nginx.conf
 sudo nginx -s reload
