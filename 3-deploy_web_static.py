@@ -86,3 +86,8 @@ def deploy():
 
     # Remote Stage: Execute do_deploy on each server
     return do_deploy(path_name)
+
+
+if __name__ == "__main__":
+
+    do_deploy()
