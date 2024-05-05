@@ -3,7 +3,7 @@
 
 
 from datetime import datetime
-from fabric.api import local, put, sudo, sudo, env, settings
+from fabric.api import local, put, sudo, sudo, env, task, runs_once
 from os import makedirs, path
 
 
@@ -21,7 +21,8 @@ def generate_archive_name():
     now = datetime.now()
     return f"web_static_{now.strftime('%Y%m%d%H%M%S')}.tgz"
 
-
+@task
+@runs_once
 def do_pack():
     """
     Creates a .tgz archive from the contents of the web_static directory.
@@ -36,11 +37,11 @@ def do_pack():
 
     if status.failed:
         return None
-    print(f"web_static packed: {file_name} -> \
+    print(f"web_static packed: versions/{file_name} -> \
 {path.getsize('versions/' + file_name)}Bytes")
     return f"versions/{file_name}"
 
-
+@task
 def do_deploy(archive_path):
     """
     Deploys an archive to the web servers.
@@ -78,7 +79,7 @@ def do_deploy(archive_path):
     print("New version deployed!")
     return True
 
-
+@task
 def deploy():
     """
     Deploys the archive to the specified web servers.
@@ -90,9 +91,9 @@ def deploy():
     archive_path = do_pack()
     if not archive_path:
         return False
-
+ 
     # Remote Stage: Execute do_deploy on each server
-    return (do_deploy(archive_path))
+    return do_deploy(archive_path)
 
 
 if __name__ == "__main__":
