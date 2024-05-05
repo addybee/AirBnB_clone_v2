@@ -34,4 +34,4 @@ http {
   }
 }"
 echo "$sys_conf" | sudo tee /etc/nginx/nginx.conf
-sudo nginx -s reload
+sudo service nginx restart
