@@ -99,6 +99,24 @@ def deploy():
     return do_deploy(archive_path)
 
 
+@task
+@runs_once
+def do_clean_local(number=0):
+
+    res = local("ls -c versions/", capture=True)
+    res = res.split()
+    start = number
+    if number == 0 or number == 1:
+        start = 1
+    files = " ".join(res[start:])
+    print(files)
+
+
+@task
+def do_clean(number=0):
+    do_clean_local(number)
+
+
 if __name__ == "__main__":
 
-    do_deploy()
+    do_clean_local()
