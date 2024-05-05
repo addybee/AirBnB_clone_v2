@@ -35,7 +35,7 @@ def do_pack():
 
     if status.failed:
         return None
-    return file_name
+    return f"versions/{file_name}"
 
 
 def do_deploy(archive_path):

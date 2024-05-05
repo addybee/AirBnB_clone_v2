@@ -32,13 +32,13 @@ def do_pack():
     file_name = generate_archive_name()
     makedirs("versions", exist_ok=True)
     print(f"Packing web_static to versions/{file_name}")
-    status = local(f"tar -cvzf versions/{file_name} web_static")
+    status = local(f"tar -czvf versions/{file_name} web_static")
 
     if status.failed:
         return None
     print(f"web_static packed: {file_name} -> \
 {path.getsize('versions/' + file_name)}Bytes")
-    return file_name
+    return f"versions/{file_name}"
 
 
 def do_deploy(archive_path):
@@ -51,6 +51,7 @@ def do_deploy(archive_path):
     Returns:
         bool: True if deployment is successful, False otherwise.
     """
+
     if not path.exists(archive_path):
         return False
 
@@ -79,13 +80,19 @@ def do_deploy(archive_path):
 
 
 def deploy():
+    """
+    Deploys the archive to the specified web servers.
+
+    Returns:
+        bool: True if deployment is successful to all servers, False otherwise.
+    """
     # Local Stage: Run do_pack locally
-    path_name = do_pack()
-    if not path_name:
+    archive_path = do_pack()
+    if not archive_path:
         return False
 
     # Remote Stage: Execute do_deploy on each server
-    return do_deploy(path_name)
+    return (do_deploy(archive_path))
 
 
 if __name__ == "__main__":
