@@ -73,3 +73,8 @@ def do_deploy(archive_path):
         return False
     print("New version deployed!")
     return True
+
+
+if __name__ == "__main__":
+
+    do_deploy(do_pack())
