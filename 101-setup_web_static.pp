@@ -1,7 +1,7 @@
 # Content of home page
 $content = 'sudo apt-get update;
 sudo apt-get -y install nginx;
-#sudo ufw allow 'Nginx HTTP';
+sudo ufw allow 'Nginx HTTP';
 sudo mkdir -p /data/web_static/shared/;
 sudo mkdir -p /data/web_static/releases/test/;
 echo "<html>
@@ -12,7 +12,7 @@ echo "<html>
   </body>
 </html>" | sudo tee /data/web_static/releases/test/index.html;
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current;
-#sudo chown -hR ubuntu:ubuntu /data/;
+sudo chown -hR ubuntu:ubuntu /data/;
 sys_conf="events {
   }
 http {
