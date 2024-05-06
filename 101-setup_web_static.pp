@@ -41,13 +41,6 @@ exec { 'update packages':
 # Install Nginx
 exec { 'install Nginx':
   command => 'sudo apt-get -y install nginx',
-  before  => Exec['allow HTTP'],
-  provider => 'shell',
-}
-
-# Allow HTTP traffic
-exec { 'allow HTTP':
-  command => 'sudo ufw allow "Nginx HTTP"',
   before  => Exec['make directory'],
   provider => 'shell',
 }
