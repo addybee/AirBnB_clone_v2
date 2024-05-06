@@ -3,7 +3,7 @@
 
 
 from datetime import datetime
-from fabric.api import local, put, sudo, sudo, env, task, runs_once
+from fabric.api import local, put, sudo, sudo, env, task, runs_once, lcd, cd
 from os import makedirs, path
 
 
@@ -103,20 +103,30 @@ def deploy():
 @runs_once
 def do_clean_local(number=0):
 
-    res = local("ls -c versions/", capture=True)
-    res = res.split()
-    start = number
-    if number == 0 or number == 1:
-        start = 1
-    files = " ".join(res[start:])
-    print(files)
+    keep = int(number) + 1
+    if number == "0" or number == "1":
+        keep = 2
+
+    with lcd("versions/"):
+        local(f"ls -1t | tail -n +{keep} | xargs rm -rf")
+
+
+@task
+def do_clean_server(number=0):
+
+    keep = int(number) + 1
+    if number == "0" or number == "1":
+        keep = 2
+    with cd("/data/web_static/releases/"):
+        sudo(f"ls -1t | tail -n +{keep} | xargs rm -rf")
 
 
 @task
 def do_clean(number=0):
     do_clean_local(number)
+    do_clean_server(number)
 
 
 if __name__ == "__main__":
 
-    do_clean_local()
+    do_clean()
