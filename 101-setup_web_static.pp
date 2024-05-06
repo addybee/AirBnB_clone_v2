@@ -40,6 +40,5 @@ sudo service nginx restart;
 # Install Nginx and configure a server
 exec { 'install Nginx':
   command => $content,
-  before  => Exec['make directory'],
   provider => 'shell',
 }
