@@ -1,17 +1,20 @@
 # Content of home page
-$index_content = '<html>
+$content = 'sudo apt-get update;
+sudo apt-get -y install nginx;
+#sudo ufw allow 'Nginx HTTP';
+sudo mkdir -p /data/web_static/shared/;
+sudo mkdir -p /data/web_static/releases/test/;
+echo "<html>
   <head>
   </head>
   <body>
     Holberton School
   </body>
-</html>
-'
-
-# Define nginx configuration
-$sys_conf = '
-events {
-}
+</html>" | sudo tee /data/web_static/releases/test/index.html;
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current;
+#sudo chown -hR ubuntu:ubuntu /data/;
+sys_conf="events {
+  }
 http {
   sendfile on;
   tcp_nopush on;
@@ -28,65 +31,15 @@ http {
       alias /data/web_static/current/;
     }
   }
-}
+}";
+echo "$sys_conf" | sudo tee /etc/nginx/nginx.conf;
+sudo service nginx restart;
 '
 
-# Update packages
-exec { 'update packages':
-  command => 'sudo apt-get -y update',
-  before  => Exec['install Nginx'],
-  provider => 'shell',
-}
 
-# Install Nginx
+# Install Nginx and configure a server
 exec { 'install Nginx':
-  command => 'sudo apt-get -y install nginx',
+  command => $content,
   before  => Exec['make directory'],
   provider => 'shell',
-}
-
-# Create necessary directories
-exec { 'make directory':
-  command => 'sudo mkdir -p /data/web_static/shared/ /data/web_static/releases/test/',
-  before  => File['create index.html'],
-  provider => 'shell',
-}
-
-# Create index.html file
-file { 'create index.html':
-  path     => '/data/web_static/releases/test/index.html',
-  ensure   => file,
-  content  => $index_content,
-  before   => File['create link'],
-}
-
-# Create symbolic link
-file { 'create link':
-  ensure   => link,
-  path     => '/data/web_static/current',
-  target   => '/data/web_static/releases/test/',
-  force    => true,
-  before   => File['set_data_ownership'],
-}
-
-# Set ownership recursively for /data directory
-exec { 'set_data_ownership':
-  command => 'sudo chown -hR ubuntu:ubuntu /data/',
-  before  => File['config file'],
-  provider => 'shell',
-}
-
-# Apply nginx configuration
-file { 'config file':
-  path    => '/etc/nginx/nginx.conf',
-  ensure  => file,
-  content => $sys_conf,
-  before  => Service['nginx'],
-}
-
-# Restart nginx service
-service { 'nginx':
-  ensure  => running,
-  enable  => true,
-  require => File['config file'],
 }

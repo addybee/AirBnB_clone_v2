@@ -102,27 +102,69 @@ def deploy():
 @task
 @runs_once
 def do_clean_local(number=0):
+    """
+    Cleans up local versions directory by deleting old archives except
+    the latest ones.
 
+    Args:
+        number (int or str, optional): Number of latest archives to keep.
+        Defaults to 0, meaning only the latest archive is kept.
+
+    Returns:
+        None
+    """
+    # Determine the number of archives to keep
     keep = int(number) + 1
     if number == "0" or number == "1":
         keep = 2
 
+    # Change directory to versions/
     with lcd("versions/"):
+        # List files sorted by modification time and delete old
+        # archives except the latest ones
         local(f"ls -1t | tail -n +{keep} | xargs rm -rf")
 
 
 @task
 def do_clean_server(number=0):
+    """
+    Cleans up server releases directory by deleting old releases
+    except the latest ones.
 
+    Args:
+        number (int or str, optional): Number of latest releases
+        to keep. Defaults to 0, meaning only the latest release is kept.
+
+    Returns:
+        None
+    """
+    # Determine the number of releases to keep
     keep = int(number) + 1
     if number == "0" or number == "1":
         keep = 2
+
+    # Change directory to /data/web_static/releases/
     with cd("/data/web_static/releases/"):
+        # List directories sorted by modification time and delete
+        # old releases except the latest ones
         sudo(f"ls -1t | tail -n +{keep} | xargs rm -rf")
 
 
 @task
 def do_clean(number=0):
+    """
+    Cleans up local and server directories by deleting old
+    archives/releases except the latest ones.
+
+    Args:
+        number (int or str, optional): Number of latest archives/releases
+        to keep. Defaults to 0, meaning only the latest archive/release
+        is kept.
+
+    Returns:
+        None
+    """
+    # Perform cleanup on both local and server directories
     do_clean_local(number)
     do_clean_server(number)
 
