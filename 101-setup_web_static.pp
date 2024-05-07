@@ -13,7 +13,7 @@ echo "<html>
 </html>" | sudo tee /data/web_static/releases/test/index.html;
 sudo ln -sf /data/web_static/releases/test/ /data/web_static/current;
 sudo chown -hR ubuntu:ubuntu /data/;
-sys_conf="events {
+echo "events {
   }
 http {
   sendfile on;
@@ -31,8 +31,7 @@ http {
       alias /data/web_static/current/;
     }
   }
-}";
-echo "$sys_conf" | sudo tee /etc/nginx/nginx.conf;
+}" | sudo tee /etc/nginx/nginx.conf;
 sudo service nginx restart;
 '
 
