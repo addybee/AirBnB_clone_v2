@@ -3,7 +3,7 @@
 
 
 from datetime import datetime
-from fabric.api import local, put, sudo, sudo, env
+from fabric.api import local, put, sudo, run, env
 from os import makedirs, path
 
 
@@ -57,19 +57,19 @@ def do_deploy(archive_path):
 
     if put(archive_path, "/tmp/", use_sudo=True).failed:
         return False
-    if sudo(f"mkdir -p {release_folder}").failed:
+    if run(f"mkdir -p {release_folder}").failed:
         return False
-    if sudo(f"tar -xzf /tmp/{file_name} -C {release_folder}").failed:
+    if run(f"tar -xzf /tmp/{file_name} -C {release_folder}").failed:
         return False
-    if sudo(f"rm -rf /tmp/{file_name}").failed:
+    if run(f"rm -rf /tmp/{file_name}").failed:
         return False
-    if sudo(f"mv {release_folder}web_static/* {release_folder}").failed:
+    if run(f"mv {release_folder}web_static/* {release_folder}").failed:
         return False
-    if sudo(f"rm -rf {release_folder}web_static/").failed:
+    if run(f"rm -rf {release_folder}web_static/").failed:
         return False
-    if sudo(f"rm -rf /data/web_static/current").failed:
+    if run(f"rm -rf /data/web_static/current").failed:
         return False
-    if sudo(f"ln -s {release_folder} /data/web_static/current").failed:
+    if run(f"ln -s {release_folder} /data/web_static/current").failed:
         return False
     print("New version deployed!")
     return True
