@@ -22,6 +22,7 @@ def generate_archive_name():
     now = datetime.now()
     return f"web_static_{now.strftime('%Y%m%d%H%M%S')}.tgz"
 
+
 @task
 @runs_once
 def do_pack():
