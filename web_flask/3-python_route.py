@@ -76,6 +76,7 @@ def cIsFun(text):
     sanitized_text = escape(text).replace("_", " ")
     return f"C {sanitized_text}"
 
+
 @app.route('/python/')
 @app.route("/python/<text>", strict_slashes=False)
 def pythonIsCool(text: str = "is cool") -> str:
