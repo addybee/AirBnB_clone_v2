@@ -3,24 +3,10 @@
 
 
 from typing import Dict, Optional
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, scoped_session
 import os
-from models.base_model import BaseModel, Base
-from models.user import User
-from models.place import Place
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.review import Review
-
-
-classes = {
-            'BaseModel': BaseModel, 'State': State, 'City': City,
-            'User': User, 'Place': Place,
-            'Review': Review, 'Amenity': Amenity,
-            }
 
 
 class DBStorage:
@@ -32,6 +18,7 @@ class DBStorage:
 
     __engine = None
     __session = None
+    __models = {}
 
     def __init__(self):
         """
@@ -49,10 +36,10 @@ class DBStorage:
                                                       mysql_host,
                                                       mysql_DB)
         self.__engine = create_engine(db_url, pool_pre_ping=True, echo=False)
-        self.reload()
+        meta = MetaData()
         if mysql_env == "test":
             try:
-                Base.metadata.drop_all(self.__engine)
+                meta.drop_all(self.__engine)
             except SQLAlchemyError:
                 pass
 
@@ -75,8 +62,8 @@ class DBStorage:
                     dict_obj.update(
                         {obj.to_dict()['__class__'] + '.' + obj.id: obj})
             else:
-                for cls in classes.values():
-                    if cls != classes["BaseModel"]:
+                for cls in self.__models.values():
+                    if cls != self.__models["BaseModel"]:
                         for obj in session.query(cls).all():
                             dict_obj.\
                                 update({obj.to_dict()['__class__'] + '.'
@@ -128,10 +115,16 @@ class DBStorage:
         session and ensure that any changes made to the database are
         reflected in the session.
         """
+        from models.base_model import Base
+        from models import user, state, city, amenity, place, review
+
+        self.__models = {'State': state.State, 'City': city.City,
+                         'User': user.User, 'Place': place.Place,
+                         'Review': review.Review, 'Amenity': amenity.Amenity,
+                         }
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(Session)
-        self.__session = Session
+        self.__session = scoped_session(Session)
 
     def close(self):
         """
