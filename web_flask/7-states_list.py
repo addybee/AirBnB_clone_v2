@@ -12,17 +12,6 @@ from models import storage, State
 app = Flask(__name__)
 
 
-def fetch_sorted_states():
-    """
-    Fetches all state objects from the storage and sorts them by name.
-
-    Returns:
-        list: Sorted list of state objects.
-    """
-    state_dict = storage.all(State).values()
-    return sorted(state_dict, key=lambda state: state.name)
-
-
 @app.teardown_appcontext
 def do_teardown(exception=None):
     """
@@ -40,7 +29,7 @@ def list_states():
         Rendered template with states context.
     """
     try:
-        states = fetch_sorted_states()
+        states = storage.all(State).values()
         return render_template("7-states_list.html", states=states)
     except Exception as e:
         return str(e), 500
