@@ -140,4 +140,4 @@ class DBStorage:
         This method should be called when you are done using the session to
         free up resources and prevent any potential issues.
         """
-        self.__session.remove()
+        self.__session.close()
