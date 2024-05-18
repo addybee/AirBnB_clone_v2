@@ -2,6 +2,7 @@
 """ This module defines a class to manage DB storage for hbnb clone """
 
 
+from typing import Dict, Optional
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, scoped_session
