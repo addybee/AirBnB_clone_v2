@@ -1,4 +1,3 @@
-from typing import Dict, Optional
 #!/usr/bin/python3
 """ This module defines a class to manage DB storage for hbnb clone """
 
@@ -137,7 +136,7 @@ class DBStorage:
     def close(self):
         """
         Closes the current database session.
-        This method should be called when you are done using the session to free up resources
-        and prevent any potential issues.
+        This method should be called when you are done using the session to
+        free up resources and prevent any potential issues.
         """
         self.__session.remove()
