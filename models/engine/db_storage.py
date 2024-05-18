@@ -44,12 +44,11 @@ class DBStorage:
         mysql_host = os.getenv("HBNB_MYSQL_HOST")
         mysql_DB = os.getenv("HBNB_MYSQL_DB")
         mysql_env = os.getenv("HBNB_ENV")
-        DBStorage.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                           format(mysql_user,
-                                                  mysql_pass,
-                                                  mysql_host,
-                                                  mysql_DB),
-                                           pool_pre_ping=True)
+        db_url = "mysql+mysqldb://{}:{}@{}/{}".format(mysql_user,
+                                                      mysql_pass,
+                                                      mysql_host,
+                                                      mysql_DB)
+        self.__engine = create_engine(db_url, pool_pre_ping=True, echo=False)
         self.reload()
         if mysql_env == "test":
             try:
