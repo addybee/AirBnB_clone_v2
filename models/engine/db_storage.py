@@ -59,15 +59,13 @@ class DBStorage:
             session = self.__session()
             if cls:
                 for obj in session.query(cls).all():
-                    dict_obj.update(
-                        {obj.to_dict()['__class__'] + '.' + obj.id: obj})
+                    key = f"{obj.to_dict()['__class__']}.{obj.id}"
+                    dict_obj.update({key: obj})
             else:
                 for cls in self.__models.values():
-                    if cls != self.__models["BaseModel"]:
-                        for obj in session.query(cls).all():
-                            dict_obj.\
-                                update({obj.to_dict()['__class__'] + '.'
-                                        + obj.id: obj})
+                    for obj in session.query(cls).all():
+                        key = f"{obj.to_dict()['__class__']}.{obj.id}"
+                        dict_obj.update({key: obj})
         except SQLAlchemyError as e:
             print(f'Error occurred: {str(e)}')
 

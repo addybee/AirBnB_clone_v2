@@ -44,19 +44,19 @@ class State(BaseModel, Base):
     else:
         name = ''
 
-        @property
-        def cities(self):
-            """
-            Getter method for cities.
-            Retrieves a list of City objects associated with the state.
+    @property
+    def cities(self):
+        """
+        Getter method for cities.
+        Retrieves a list of City objects associated with the state.
 
-            Returns:
-                List[City]: A list of City objects associated with the state.
-            """
-            from models import storage
-            from models import City
+        Returns:
+            List[City]: A list of City objects associated with the state.
+        """
+        from models import storage
+        from models import City
 
-            return [
-                    city for city in storage.all(City).
-                    values() if self.id == city.state_id
-                    ]
+        return [
+                city for city in storage.all(City).
+                values() if self.id == city.state_id
+                ]

@@ -20,17 +20,17 @@ def do_teardown(exception=None):
     storage.close()
 
 
-@app.route("/states_list", strict_slashes=False)
-def list_states():
+@app.route("/cities_by_states", strict_slashes=False)
+def list_state_cities():
     """
-    Route to display a list of states sorted by name.
+    Route to display a list of cities by states sorted by name.
 
     Returns:
-        Rendered template with states context.
+        Rendered template with list of cities by states context.
     """
     try:
         states = storage.all(State)
-        return render_template("7-states_list.html", states=states)
+        return render_template("8-cities_by_states.html", states=states)
     except Exception as e:
         return str(e), 500
 
