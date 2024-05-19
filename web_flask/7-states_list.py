@@ -6,6 +6,8 @@ It includes routes to display a sorted list of state objects fetched from
 a storage backend. The application also handles the teardown of
 the application context by closing the database connection.
 """
+
+
 from flask import Flask, render_template
 from models import storage, State
 
