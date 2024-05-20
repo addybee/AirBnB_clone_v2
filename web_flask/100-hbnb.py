@@ -10,7 +10,7 @@ Example Usage:
 Assuming the Flask app is running, you can access the functionality via
 a web browser:
 Visit http://0.0.0.0:5000/hbnb_filters to see the rendered HTML page with
-states, cities, and amenities.
+states, cities, places and amenities.
 
 Inputs:
 - exception: Optional. Used in the teardown function to handle exceptions
@@ -18,13 +18,13 @@ during the teardown process.
 
 Outputs:
 - HTML content rendered from the `10-hbnb_filters.html` template populated
-with states, cities, and amenities data, or an error message with a 500 status
-code in case of an exception.
+with states, cities, places and amenities data, or an error message with a
+500 status code in case of an exception.
 """
 
 
 from flask import Flask, render_template
-from models import storage, State, City, Amenity
+from models import storage, State, City, Amenity, Place
 
 
 app = Flask(__name__)
@@ -38,14 +38,15 @@ def do_teardown(exception=None):
     storage.close()
 
 
-@app.route("/hbnb_filters", strict_slashes=False)
+@app.route("/hbnb", strict_slashes=False)
 def hbnb_filter():
     """
-    Retrieve data about states, cities, and amenities from storage and
+    Retrieve data about states, cities, places and amenities from storage and
     render a template.
 
     Returns:
-        str: Rendered HTML page with data about states, cities, and amenities.
+        str: Rendered HTML page with data about states, cities, places and
+        amenities.
         If an exception occurs, returns an error message with a 500 status
         code.
     """
@@ -53,8 +54,10 @@ def hbnb_filter():
         states = storage.all(State)
         cities = storage.all(City)
         amenities = storage.all(Amenity)
-        return render_template("10-hbnb_filters.html", states=states,
-                               cities=cities, amenities=amenities)
+        places = storage.all(Place)
+        return render_template("100-hbnb.html", states=states,
+                               cities=cities, amenities=amenities,
+                               places=places)
     except Exception as e:
         return str(e), 500
 
