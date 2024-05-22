@@ -58,7 +58,7 @@ class DBStorage:
         try:
             session = self.__session()
             if cls:
-                if type(cls) is str:
+                if isinstance(cls, str):
                     cls = self.__models[cls]
                 for obj in session.query(cls).all():
                     key = f"{obj.to_dict()['__class__']}.{obj.id}"

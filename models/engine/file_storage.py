@@ -13,13 +13,13 @@ class FileStorage:
         """Returns a dictionary of models currently in storage"""
         dictionary = {}
         if cls:
-            if type(cls) is type:
+            if isinstance(cls, type):
                 cls = get_key_from_value(self.__models, cls)
             for key, val in self.__objects.items():
                 if key.split(".")[0] == cls:
                     dictionary.update({key: val})
             return dictionary
-        dictionary.update(FileStorage.__objects)
+        dictionary.update(self.__objects)
         return dictionary
 
     def new(self, obj):
