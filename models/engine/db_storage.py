@@ -58,6 +58,8 @@ class DBStorage:
         try:
             session = self.__session()
             if cls:
+                if type(cls) is str:
+                    cls = self.__models[cls]
                 for obj in session.query(cls).all():
                     key = f"{obj.to_dict()['__class__']}.{obj.id}"
                     dict_obj.update({key: obj})
@@ -114,12 +116,18 @@ class DBStorage:
         reflected in the session.
         """
         from models.base_model import Base
-        from models import user, state, city, amenity, place, review
+        from models.user import User
+        from models.place import Place
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.review import Review
 
-        self.__models = {'State': state.State, 'City': city.City,
-                         'User': user.User, 'Place': place.Place,
-                         'Review': review.Review, 'Amenity': amenity.Amenity,
-                         }
+        self.__models = {
+            'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+            }
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(Session)
